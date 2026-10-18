@@ -21,9 +21,11 @@ try {
         throw new Error('error of getting data')
     }
     console.log(response);
+
+    const data = await response.json()
     
 } catch (error) {
-    
+    console.error('failed to recieve adress',error)
 }
 })
 
