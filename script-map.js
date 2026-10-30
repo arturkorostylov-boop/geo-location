@@ -2,12 +2,45 @@ const coordinatesForm = document.querySelector('#coordinatesForm')
 const latitudeInput = document.querySelector('#latitude')
 const longitudeInput = document.querySelector('#longitude')
 const result = document.querySelector('#result')
+const detectLocationButton = document.querySelector('#detectLocation')
+
+detectLocationButton.addEventListener('click',()=>{
+    if (!navigator.geolocation) {
+        result.textContent = 'your browser does not support finding of place'
+        return
+    }else{
+        console.log(navigator.geolocation);
+        
+    }
+    result.textContent = 'waiting for access and detect place'
+    navigator.geolocation.getCurrentPosition(
+        ({coords})=>{
+            latitudeInput.value = coords.latitude
+            longitudeInput.value = coords.longitude
+            
+        },
+        (error)=>{
+            const messages = {
+                1:'access to location is denied',
+                2:'error trying to find place',
+                3:'time of finding place has ended'
+            }
+            result.textContent = messages[error.code] || 'error trying to find place'
+        },
+        {
+            enableHighAccuracy:true,
+            timeout:10000,
+            maximumAge:60000
+
+        }
+    )
+})
 
 coordinatesForm.addEventListener('submit', async (event) => {
     event.preventDefault()
     const latitude = Number(latitudeInput.value)
     const longitude = Number(longitudeInput.value)
-
+    
 
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&addressdetails=1&accept-language=uk&zoom=18`
 
@@ -53,6 +86,7 @@ coordinatesForm.addEventListener('submit', async (event) => {
         console.error('failed to recieve address', error)
     }
 })
+
 
 latitudeInput.focus()
 
